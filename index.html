@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
+  <title>4-byte-gen</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+      inline-size: min(100% - 16px, 720px);
+      margin-inline: auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    form * {
+      inline-size: fit-content;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-inline-size: 100%;
+      min-block-size: 10ch;
+      padding: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>4-byte-gen</h1>
+  </header>
+
+  <main>
+    <form>
+      <label for="functions">Functions</label>
+      <textarea name="functions" id="functions" required></textarea>
+
+      <label for="minimum">Minimum number of zero bytes</label>
+      <input type="number" name="minimum" id="minimum" min="1" max="3" required>
+
+      <button>Generate</button>
+
+      <label for="optimized">Optimized functions</label>
+      <output name="optimized" id="optimized"></output>
+    </form>
+
+  </main>
+
+  <script type="module">
+    // From noble-hashes v1.3.0
+    import { keccak256 } from '/keccak256.js';
+    const encoder = new TextEncoder();
+    const validChars = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+    // Normalize and extract the function name and parameter types
+    function splitFunction(fn) {
+      // Clean all characters that definitely do not affect the signature
+      fn = fn.replaceAll(';', ''); // TODO: any others?
+
+      // Extract the function name and parameters
+      // Original regex is from wagmi-dev/abitype
+      // https://github.com/wagmi-dev/abitype/blob/main/src/human-readable/runtime/signatures.ts#L31
+      const functionRegex = /^function (?<name>[a-zA-Z0-9_]+)\((?<parameters>.*?)\)/;
+      const { name, parameters } = functionRegex.exec(fn).groups;
+
+      // Drop parameter names and extraneous whitespace, if there are any
+      // E.g. "uint256 abc, uint256, bool test" --> "uint256,uint256,bool"
+      const parametersTypes = parameters.split(',').map(param => param.trim().split(' ')[0]).join(',');
+
+      return { name, parametersTypes };
+    }
+
+    document.querySelector('form').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const data = new FormData(e.target);
+      const fns = data.get('functions').split('\n');
+      const minimum = parseInt(data.get('minimum'));
+
+      // This is really dumb and is for a quick proof of concept only.
+      (function () {
+        for (const fn of fns) {
+          const { name, parametersTypes } = splitFunction(fn);
+          for (const a of validChars) {
+            for (const b of validChars) {
+              for (const c of validChars) {
+                for (const d of validChars) {
+                  for (const e of validChars) {
+                    const fn = `${name}_${a}${b}${c}${d}${e}(${parametersTypes})`;
+                    const byteArray = keccak256(encoder.encode(fn)).slice(0, 4);
+                    for (let i = 0; i < minimum; i++) {
+                      if (byteArray[i] === 0) {
+                        if (i + 1 === minimum) {
+                          const hash = `0x${[...byteArray].map(b => b.toString(16).padStart(2, '0')).join('')}`;
+                          console.log({ fn, hash });
+                          return;
+                        }
+                      }
+                      else {
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })();
+    })
+  </script>
+
+</body>
+
+</html>
