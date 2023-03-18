@@ -78,6 +78,39 @@
       return { name, parametersTypes };
     }
 
+    function calculateOptimizedName(name, parametersTypes, minimum) {
+      let counter = 0;
+      function generate(name, parametersTypes) {
+        const functionName = `${name}_${counter.toString(36)}(${parametersTypes})`;
+        counter++;
+
+        const hash = validate(functionName);
+        if (!hash) {
+          return generate(name, parametersTypes);
+        }
+        else {
+          return { functionName, hash };
+        }
+      }
+
+      function validate(functionName) {
+        const byteArray = keccak256(encoder.encode(functionName)).slice(0, 4);
+        for (let i = 0; i < minimum; i++) {
+          if (byteArray[i] === 0) {
+            if (i + 1 === minimum) {
+              const hash = `0x${[...byteArray].map(b => b.toString(16).padStart(2, '0')).join('')}`;
+              return hash;
+            }
+          }
+          else {
+            return false;
+          }
+        }
+      }
+
+      return generate(name, parametersTypes);
+    }
+
     document.querySelector('form').addEventListener('submit', e => {
       e.preventDefault();
 
@@ -85,36 +118,11 @@
       const fns = data.get('functions').split('\n');
       const minimum = parseInt(data.get('minimum'));
 
-      // This is really dumb and is for a quick proof of concept only.
-      (function () {
-        for (const fn of fns) {
-          const { name, parametersTypes } = splitFunction(fn);
-          for (const a of validChars) {
-            for (const b of validChars) {
-              for (const c of validChars) {
-                for (const d of validChars) {
-                  for (const e of validChars) {
-                    const fn = `${name}_${a}${b}${c}${d}${e}(${parametersTypes})`;
-                    const byteArray = keccak256(encoder.encode(fn)).slice(0, 4);
-                    for (let i = 0; i < minimum; i++) {
-                      if (byteArray[i] === 0) {
-                        if (i + 1 === minimum) {
-                          const hash = `0x${[...byteArray].map(b => b.toString(16).padStart(2, '0')).join('')}`;
-                          console.log({ fn, hash });
-                          return;
-                        }
-                      }
-                      else {
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      })();
+      for (const fn of fns) {
+        const { name, parametersTypes } = splitFunction(fn);
+        const { functionName, hash } = calculateOptimizedName(name, parametersTypes, minimum);
+        console.log(functionName, hash);
+      }
     })
   </script>
 
