@@ -93,7 +93,7 @@
     }
 
     function calculateOptimizedName(name, parametersTypes, minimum) {
-      let counter = 0;
+      let counter = 0n;
       let functionName = `${name}_${counter}(${parametersTypes})`;
       let hash = validate(functionName, minimum);
       while (!hash) {
