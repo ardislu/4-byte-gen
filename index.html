@@ -60,7 +60,7 @@
     // Normalize and extract the function name and parameter types
     function splitFunction(fn) {
       // Clean all characters that definitely do not affect the signature
-      fn = fn.replaceAll(';', ''); // TODO: any others?
+      fn = fn.replaceAll(/[;'"]/g, '');
 
       // Extract the function name and parameters
       // Original regex is from wagmi-dev/abitype
