@@ -118,7 +118,8 @@
       const fns = data.get('functions').split('\n');
       const minimum = parseInt(data.get('minimum'));
 
-      for (const fn of fns) {
+      for (let fn of fns) {
+        fn = fn.trim();
         const { name, parametersTypes } = splitFunction(fn);
         const { functionName, hash } = calculateOptimizedName(name, parametersTypes, minimum);
         console.log(functionName, hash);
