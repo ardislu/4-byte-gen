@@ -120,6 +120,9 @@
 
       for (let fn of fns) {
         fn = fn.trim();
+        if (fn === '') {
+          continue;
+        }
         const { name, parametersTypes } = splitFunction(fn);
         const { functionName, hash } = calculateOptimizedName(name, parametersTypes, minimum);
         console.log(functionName, hash);
