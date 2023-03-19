@@ -68,7 +68,7 @@
       // Extract the function name and parameters
       // Original regex is from wagmi-dev/abitype
       // https://github.com/wagmi-dev/abitype/blob/main/src/human-readable/runtime/signatures.ts#L31
-      const functionRegex = /^function (?<name>[a-zA-Z0-9_]+)\((?<parameters>.*?)\)/;
+      const functionRegex = /^(function )?(?<name>[a-zA-Z0-9_]+)\((?<parameters>.*?)\)/;
       const { name, parameters } = functionRegex.exec(fn).groups;
 
       // Drop parameter names and extraneous whitespace, if there are any
