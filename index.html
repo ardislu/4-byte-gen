@@ -10,6 +10,8 @@
   <link rel="modulepreload" href="/worker.js">
   <title>4-byte-gen</title>
   <style>
+    /* Globals */
+
     :root {
       font-family: 'Inter', sans-serif;
     }
@@ -23,57 +25,345 @@
     * {
       box-sizing: border-box;
       margin: 0;
+      font-family: inherit;
+      font-size: 1rem;
     }
 
     body {
-      inline-size: min(100% - 16px, 720px);
-      margin-inline: auto;
+      background: hsl(216deg 50% 95%);
+      color: hsl(216deg 50% 5%);
     }
 
-    form {
+    /* Layout */
+
+    main {
+      inline-size: min(100% - 16px, 1440px);
+      margin-inline: auto;
+      margin-block: 48px;
+      display: grid;
+      grid-template:
+        "info input"
+        "output output"
+        / 1fr 2fr;
+      gap: 16px;
+    }
+
+    .mobile-banner {
+      grid-area: banner;
+      display: none;
+      padding: 24px;
+      border-radius: 8px;
+      background: hsl(216deg 80% 90%);
+    }
+
+    .info {
+      grid-area: info;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input {
+      grid-area: input;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      margin-block-start: 55px;
     }
 
-    form * {
-      inline-size: fit-content;
-      font-size: 1rem;
-      font-family: inherit;
+    output {
+      grid-area: output;
+      display: none;
+      overflow-x: auto;
+    }
+
+    /* Section styling */
+
+    .subtitle {
+      opacity: 0.9;
+    }
+
+    .status {
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Element styling */
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    label {
+      font-weight: 700;
+      margin-inline-end: 4px;
+    }
+
+    textarea,
+    input,
+    button {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid hsl(216deg 50% 80%);
     }
 
     textarea {
+      display: block;
       min-inline-size: 100%;
       min-block-size: 10ch;
-      padding: 4px;
+      margin-block-start: 4px;
+      resize: vertical;
+    }
+
+    input {
+      inline-size: 48px;
+    }
+
+    textarea,
+    input {
+      transition: border-color 600ms, filter 800ms;
+    }
+
+    textarea:hover,
+    input:hover {
+      border: 1px solid hsl(216deg 50% 70%);
+      filter: drop-shadow(0 0 4px hsl(216deg 80% 90%));
+      transition: border-color 200ms, filter 400ms;
+    }
+
+    textarea:focus-within,
+    input:focus-within {
+      border: 1px solid hsl(216deg 50% 60%);
+      filter: drop-shadow(0 0 8px hsl(216deg 70% 80%));
+      transition: border-color 200ms, filter 400ms;
+    }
+
+    button {
+      inline-size: fit-content;
+      padding-inline: 16px;
+      padding-block: 8px;
+      font-weight: 600;
+      opacity: 0.9;
+      background: hsl(216deg 80% 80%);
+      color: hsl(216deg 50% 10%);
+      border: hsl(216deg 80% 70%);
+      cursor: pointer;
+      transition: background-color 600ms, filter 800ms;
+    }
+
+    button:hover:not(:disabled) {
+      background: hsl(216deg 75% 75%);
+      filter: drop-shadow(0 0 8px hsl(216deg 70% 80%));
+      transition: background-color 200ms, filter 400ms;
+    }
+
+    button:disabled {
+      background: hsl(216deg 30% 80%);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    table {
+      inline-size: 100%;
+    }
+
+    td {
+      text-align: center;
+    }
+
+    /* This is a desktop-first tool. Below is the alternate view for small screens. */
+    @media (max-width: 900px) {
+      main {
+        grid-template:
+          "banner"
+          "info"
+          "input"
+          "output"
+          / 1fr;
+        margin-block: 24px;
+      }
+
+      .mobile-banner {
+        display: block;
+      }
+
+      .input {
+        margin-block-start: 0;
+      }
+
+      .minimum-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .minimum-container label {
+        margin-inline-end: auto;
+      }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>4-byte-gen</h1>
-  </header>
-
   <main>
-    <form>
-      <label for="functions">Solidity code</label>
-      <textarea name="functions" id="functions"
-        placeholder="function balanceOf(address _owner) external view returns (uint256 balance)" autocomplete="off"
-        required></textarea>
+    <div class="mobile-banner">
+      <p>This website is intended to be used on larger screens. It will still work on this device, but the experience
+        may not be optimal.</p>
+    </div>
 
-      <label for="minimum">Minimum number of zero bytes</label>
-      <input type="number" name="minimum" id="minimum" min="1" max="3" value="1" autocomplete="off" required>
+    <section class="info">
+      <h1>4-byte-gen</h1>
+      <p class="subtitle">This tool generates Solidity function names with leading zeroes in their 4-byte
+        selectors. These optimized function names will make your smart contract bytecode smaller and save gas on
+        deployment. The functions will also cost less gas to call after the smart contract is deployed.</p>
+      <p class="status">Enter some Solidity code in the text box and press "Parse functions".</p>
+    </section>
 
-      <button>Generate</button>
+    <form class="input">
+      <div>
+        <label for="functions">Solidity code</label>
+        <textarea name="functions" id="functions"
+          placeholder="function balanceOf(address _owner) external view returns (uint256 balance)" autocomplete="off"
+          required></textarea>
+      </div>
 
-      <label for="optimized">Optimized functions</label>
-      <output name="optimized" id="optimized"></output>
+      <div class="minimum-container">
+        <label for="minimum">Minimum number of zero bytes</label>
+        <input type="number" name="minimum" id="minimum" min="1" max="3" value="1" autocomplete="off" required>
+      </div>
+
+      <div class="actions">
+        <button id="parse-functions">Parse functions</button>
+        <button id="start-all" disabled>Start all</button>
+        <button id="pause-all" disabled>Pause all</button>
+      </div>
     </form>
 
+    <output>
+      <table>
+        <thead>
+          <tr>
+            <th>Original Name</th>
+            <th>Original Selector</th>
+            <th>Optimized Name</th>
+            <th>Optimized Selector</th>
+            <th>Seed</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </output>
   </main>
 
   <script type="module">
+    /* Globals */
+
+    const status = document.querySelector('p.status');
+    const functions = document.querySelector('#functions');
+    const minimum = document.querySelector('#minimum');
+    const form = document.querySelector('form');
+    const parseFunctions = document.querySelector('#parse-functions');
+    const startAll = document.querySelector('#start-all');
+    const pauseAll = document.querySelector('#pause-all');
+    const outputContainer = document.querySelector('output')
+    const outputBody = document.querySelector('tbody');
+
+    let state = new Map(); // Store for all active functions
+    globalThis.state = state; // For debugging
+
+    /* UI */
+
+    // Parse code input and update state to set the new functions. This is the only function that modifies state.
+    function setState(code) {
+      const newState = new Map();
+
+      // Assume each function is on its own line
+      const fns = code.split('\n');
+      for (let fn of fns) {
+        // Clean up empty lines
+        fn = fn.trim();
+        if (fn === '') {
+          continue;
+        }
+
+        // Split out the name from the parameters
+        let name, parametersTypes;
+        try {
+          ({ name, parametersTypes } = splitFunction(fn));
+        }
+        catch {
+          continue;
+        }
+
+        // Add any new functions to the state
+        const normalizedName = `${name}(${parametersTypes})`;
+        newState.set(normalizedName, {
+          name,
+          parametersTypes,
+          normalizedName,
+          normalizedSelector: null,
+          optimizedName: null,
+          optimizedSelector: null,
+          seed: 0,
+          status: 'Not started',
+          action: null,
+          worker: null
+        });
+      }
+
+      // Retain old state if new state is empty
+      if (newState.size === 0) {
+        status.textContent = 'No Solidity functions were found. Is the input valid Solidity code?';
+        return;
+      }
+
+      state = newState;
+      globalThis.state = state; // For debugging
+    }
+
+    // Update status and output table to match state
+    function updateUi(state) {
+      outputBody.innerHTML = '';
+
+      if (state.size === 0) {
+        parseFunctions.disabled = false;
+        startAll.disabled = true;
+        pauseAll.disabled = true;
+        return;
+      }
+
+      for (const row of state.values()) {
+        const rowElem = outputBody.insertRow();
+        row.rowElem = rowElem;
+        row.originalNameElem = rowElem.insertCell();
+        row.originalSelectorElem = rowElem.insertCell();
+        row.optimizedNameElem = rowElem.insertCell();
+        row.optimizedSelectorElem = rowElem.insertCell();
+        row.seedElem = rowElem.insertCell();
+        row.statusElem = rowElem.insertCell();
+        row.actionElem = rowElem.insertCell();
+
+        row.originalNameElem.textContent = row.normalizedName;
+        row.originalSelectorElem.textContent = row.originalSelector;
+        row.optimizedNameElem.textContent = row.optimizedName;
+        row.optimizedSelectorElem.textContent = row.optimizedSelector;
+        row.seedElem.textContent = row.seed;
+        row.statusElem.textContent = row.status;
+        row.actionElem.textContent = row.action;
+      }
+
+      startAll.disabled = false;
+      outputContainer.style.display = 'block';
+      status.textContent = 'Press the "START ALL" button to begin finding optimized function names for all functions, or press "START" on individual functions.';
+    }
+
+    /* Business logic */
+
     // Normalize and extract the function name and parameter types
     function splitFunction(fn) {
       // Clean all characters that definitely do not affect the signature
@@ -92,28 +382,49 @@
       return { name, parametersTypes };
     }
 
-    document.querySelector('form').addEventListener('submit', e => {
-      e.preventDefault();
+    function handleParseFunctions(e) {
+      // TODO: implement confirmation dialog
+      // if (state.size > 0) {
+      //   window.alert('*PLACEHOLDER WARNING* All previously parsed functions will be deleted. Are you sure?');
+      // }
+      setState(functions.value);
+      updateUi(state);
+    }
 
-      const data = new FormData(e.target);
-      const fns = data.get('functions').split('\n');
-      const minimum = parseInt(data.get('minimum'));
-
-      for (let fn of fns) {
-        fn = fn.trim();
-        if (fn === '') {
-          continue;
-        }
-        const { name, parametersTypes } = splitFunction(fn);
-
-        const worker = new Worker('/worker.js', { type: 'module' });
-        worker.postMessage({ name, parametersTypes, minimum });
-        worker.addEventListener('message', e => {
-          const { functionName, hash } = e.data;
-          console.log(functionName, hash);
+    function handleStartAll(e) {
+      for (const row of state.values()) {
+        row.worker = new Worker('/worker.js', { type: 'module' });
+        row.worker.postMessage({ name: row.name, parametersTypes: row.parametersTypes, minimum: parseInt(minimum.value) });
+        row.worker.addEventListener('message', e => {
+          const { functionName, hash, counter } = e.data;
+          row.optimizedName = functionName;
+          row.optimizedSelector = hash;
+          row.seed = counter;
+          updateUi(state)
         });
       }
-    })
+    }
+
+    function handlePauseAll(e) {
+
+    }
+
+    /* Wire up the UI to the business logic */
+
+    // On button click, call the appropriate handler
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      if (e.submitter === parseFunctions) {
+        handleParseFunctions(e);
+      }
+      else if (e.submitter === startAll) {
+        handleStartAll(e);
+      }
+      else if (e.submitter === pauseAll) {
+        handlePauseAll(e);
+      }
+    });
   </script>
 
 </body>
