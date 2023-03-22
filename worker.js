@@ -26,11 +26,11 @@ function calculateOptimizedName(name, parametersTypes, minimum) {
     functionName = `${name}_${counter.toString(36)}(${parametersTypes})`;
     hash = validate(functionName, minimum);
   }
-  return { functionName, hash };
+  return { functionName, hash, counter };
 }
 
 addEventListener('message', e => {
   const { name, parametersTypes, minimum } = e.data;
-  const { functionName, hash } = calculateOptimizedName(name, parametersTypes, minimum);
-  postMessage({ functionName, hash });
+  const { functionName, hash, counter } = calculateOptimizedName(name, parametersTypes, minimum);
+  postMessage({ functionName, hash, counter });
 });
