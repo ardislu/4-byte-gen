@@ -402,13 +402,14 @@
     function handleStartAll(e) {
       for (const row of state.values()) {
         row.worker = new Worker('/worker.js', { type: 'module' });
-        row.worker.postMessage({ name: row.name, parametersTypes: row.parametersTypes, minimum: parseInt(minimum.value) });
+        row.worker.postMessage({ name: row.name, parametersTypes: row.parametersTypes, seed: row.seed, minimum: parseInt(minimum.value) });
         row.worker.addEventListener('message', e => {
-          const { functionName, hash, counter } = e.data;
+          const { functionName, hash, counter, completed } = e.data;
           row.optimizedName = functionName;
           row.optimizedSelector = hash;
           row.seed = counter;
-          updateUi(state)
+          row.status = completed ? 'Completed' : 'Searching';
+          updateUi(state);
         });
       }
     }

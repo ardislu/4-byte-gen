@@ -17,20 +17,23 @@ function validate(functionName, minimum) {
   }
 }
 
-function calculateOptimizedName(name, parametersTypes, minimum) {
-  let counter = 0n;
+function calculateOptimizedName(name, parametersTypes, seed, minimum) {
+  let counter = BigInt(seed);
   let functionName = `${name}_${counter}(${parametersTypes})`;
   let hash = validate(functionName, minimum);
   while (!hash) {
     counter++;
     functionName = `${name}_${counter.toString(36)}(${parametersTypes})`;
     hash = validate(functionName, minimum);
+    if (counter % 1000n === 0n) {
+      postMessage({ functionName, hash, counter, completed: false });
+    }
   }
   return { functionName, hash, counter };
 }
 
 addEventListener('message', e => {
-  const { name, parametersTypes, minimum } = e.data;
-  const { functionName, hash, counter } = calculateOptimizedName(name, parametersTypes, minimum);
-  postMessage({ functionName, hash, counter });
+  const { name, parametersTypes, seed = 0, minimum } = e.data;
+  const { functionName, hash, counter } = calculateOptimizedName(name, parametersTypes, seed, minimum);
+  postMessage({ functionName, hash, counter, completed: true });
 });
