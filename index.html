@@ -263,6 +263,10 @@
   </main>
 
   <script type="module">
+    // From noble-hashes v1.3.0
+    import { keccak256 } from '/keccak256.js';
+    const encoder = new TextEncoder();
+
     /* Globals */
 
     const status = document.querySelector('p.status');
@@ -304,11 +308,13 @@
 
         // Add any new functions to the state
         const normalizedName = `${name}(${parametersTypes})`;
+        const byteArray = keccak256(encoder.encode(normalizedName)).slice(0, 4);
+        const hash = `0x${[...byteArray].map(b => b.toString(16).padStart(2, '0')).join('')}`;
         newState.set(normalizedName, {
           name,
           parametersTypes,
           normalizedName,
-          normalizedSelector: null,
+          normalizedSelector: hash,
           optimizedName: null,
           optimizedSelector: null,
           seed: 0,
@@ -351,7 +357,7 @@
         row.actionElem = rowElem.insertCell();
 
         row.originalNameElem.textContent = row.normalizedName;
-        row.originalSelectorElem.textContent = row.originalSelector;
+        row.originalSelectorElem.textContent = row.normalizedSelector;
         row.optimizedNameElem.textContent = row.optimizedName;
         row.optimizedSelectorElem.textContent = row.optimizedSelector;
         row.seedElem.textContent = row.seed;
