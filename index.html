@@ -366,6 +366,7 @@
       }
 
       startAll.disabled = false;
+      pauseAll.disabled = false;
       outputContainer.style.display = 'block';
       status.textContent = 'Press the "START ALL" button to begin finding optimized function names for all functions, or press "START" on individual functions.';
     }
@@ -415,7 +416,11 @@
     }
 
     function handlePauseAll(e) {
-
+      for (const row of state.values()) {
+        row.worker.terminate();
+        row.status = 'Paused';
+      }
+      updateUi(state);
     }
 
     /* Wire up the UI to the business logic */
