@@ -407,7 +407,7 @@
         row.worker.addEventListener('message', e => {
           const { functionName, hash, counter, completed } = e.data;
           row.optimizedName = functionName;
-          row.optimizedSelector = hash;
+          row.optimizedSelector = hash ? hash : null;
           row.seed = counter;
           row.status = completed ? 'Completed' : 'Searching';
           updateUi(state);
