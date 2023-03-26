@@ -280,7 +280,7 @@
 
     /* UI */
 
-    // Parse code input and update state to set the new functions. This is the only function that modifies state.
+    // Parse code input and update state to set the new functions
     function setState(code) {
       state.clear();
 
@@ -323,7 +323,6 @@
         });
       }
 
-      // Retain old state if new state is empty
       if (state.size === 0) {
         status.textContent = 'No Solidity functions were found. Is the input valid Solidity code?';
         return;
