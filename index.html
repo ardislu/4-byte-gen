@@ -407,7 +407,7 @@
         row.worker = new Worker('/worker.js', { type: 'module' });
         row.worker.postMessage({ name: row.name, parametersTypes: row.parametersTypes, seed: row.seed, minimum: parseInt(minimum.value) });
         row.worker.addEventListener('message', e => {
-          const { functionName, hash, counter, completed } = e.data;
+          const { functionName, hash, counter } = e.data;
           row.optimizedName = functionName;
           row.optimizedSelector = hash ? hash : null;
           row.seed = counter;

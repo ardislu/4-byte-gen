@@ -25,9 +25,6 @@ function calculateOptimizedName(name, parametersTypes, seed, minimum) {
     counter++;
     functionName = `${name}_${counter.toString(36)}(${parametersTypes})`;
     hash = validate(functionName, minimum);
-    if (counter % 1000n === 0n) {
-      postMessage({ functionName, hash, counter, completed: false });
-    }
   }
   return { functionName, hash, counter };
 }
@@ -35,6 +32,6 @@ function calculateOptimizedName(name, parametersTypes, seed, minimum) {
 addEventListener('message', e => {
   const { name, parametersTypes, seed = 0, minimum } = e.data;
   const { functionName, hash, counter } = calculateOptimizedName(name, parametersTypes, seed, minimum);
-  postMessage({ functionName, hash, counter, completed: true });
+  postMessage({ functionName, hash, counter });
   close();
 });
