@@ -240,7 +240,6 @@
       <div class="actions">
         <button id="parse-functions">Parse functions</button>
         <button id="start-all" disabled>Start all</button>
-        <button id="pause-all" disabled>Pause all</button>
       </div>
     </form>
 
@@ -253,8 +252,6 @@
             <th>Optimized Name</th>
             <th>Optimized Selector</th>
             <th>Seed</th>
-            <th>Status</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -275,7 +272,6 @@
     const form = document.querySelector('form');
     const parseFunctions = document.querySelector('#parse-functions');
     const startAll = document.querySelector('#start-all');
-    const pauseAll = document.querySelector('#pause-all');
     const outputContainer = document.querySelector('output')
     const outputBody = document.querySelector('tbody');
 
@@ -318,8 +314,6 @@
           optimizedName: null,
           optimizedSelector: null,
           seed: 0,
-          status: 'Not started',
-          action: null,
           worker: null
         });
       }
@@ -341,7 +335,6 @@
       if (state.size === 0) {
         parseFunctions.disabled = false;
         startAll.disabled = true;
-        pauseAll.disabled = true;
         return;
       }
 
@@ -366,9 +359,8 @@
       }
 
       startAll.disabled = false;
-      pauseAll.disabled = false;
       outputContainer.style.display = 'block';
-      status.textContent = 'Press the "START ALL" button to begin finding optimized function names for all functions, or press "START" on individual functions.';
+      status.textContent = 'Press the "START ALL" button to begin finding optimized function names for all functions.';
     }
 
     /* Business logic */
@@ -409,18 +401,9 @@
           row.optimizedName = functionName;
           row.optimizedSelector = hash ? hash : null;
           row.seed = counter;
-          row.status = completed ? 'Completed' : 'Searching';
           updateUi(state);
         });
       }
-    }
-
-    function handlePauseAll(e) {
-      for (const row of state.values()) {
-        row.worker.terminate();
-        row.status = 'Paused';
-      }
-      updateUi(state);
     }
 
     /* Wire up the UI to the business logic */
@@ -434,9 +417,6 @@
       }
       else if (e.submitter === startAll) {
         handleStartAll(e);
-      }
-      else if (e.submitter === pauseAll) {
-        handlePauseAll(e);
       }
     });
   </script>
