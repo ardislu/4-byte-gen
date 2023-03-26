@@ -346,14 +346,14 @@
       for (const row of state.values()) {
         const rowElem = outputBody.insertRow();
         row.rowElem = rowElem;
-        row.originalNameElem = rowElem.insertCell();
-        row.originalSelectorElem = rowElem.insertCell();
+        row.normalizedNameElem = rowElem.insertCell();
+        row.normalizedSelectorElem = rowElem.insertCell();
         row.optimizedNameElem = rowElem.insertCell();
         row.optimizedSelectorElem = rowElem.insertCell();
         row.seedElem = rowElem.insertCell();
 
-        row.originalNameElem.textContent = row.normalizedName;
-        row.originalSelectorElem.textContent = row.normalizedSelector;
+        row.normalizedNameElem.textContent = row.normalizedName;
+        row.normalizedSelectorElem.textContent = row.normalizedSelector;
         row.optimizedNameElem.textContent = row.optimizedName;
         row.optimizedSelectorElem.textContent = row.optimizedSelector;
         row.seedElem.textContent = row.seed;
