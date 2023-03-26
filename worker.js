@@ -36,4 +36,5 @@ addEventListener('message', e => {
   const { name, parametersTypes, seed = 0, minimum } = e.data;
   const { functionName, hash, counter } = calculateOptimizedName(name, parametersTypes, seed, minimum);
   postMessage({ functionName, hash, counter, completed: true });
+  close();
 });
