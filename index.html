@@ -292,7 +292,7 @@
         if (fn === '') {
           continue;
         }
-        if (fn.substring(0, 8) === 'contract') {
+        if (fn.substring(0, 8) === 'contract' || fn.substring(0, 17) === 'abstract contract') {
           // Use strict-mode splitFunction for full contracts
           strict = true;
           continue;
