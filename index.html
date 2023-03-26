@@ -275,14 +275,14 @@
     const outputContainer = document.querySelector('output')
     const outputBody = document.querySelector('tbody');
 
-    let state = new Map(); // Store for all active functions
+    const state = new Map(); // Store for all active functions
     globalThis.state = state; // For debugging
 
     /* UI */
 
     // Parse code input and update state to set the new functions. This is the only function that modifies state.
     function setState(code) {
-      const newState = new Map();
+      state.clear();
 
       let strict = false;
       const fns = code.split('\n'); // Assume each function is on its own line
@@ -311,7 +311,7 @@
         const normalizedName = `${name}(${parametersTypes})`;
         const byteArray = keccak256(encoder.encode(normalizedName)).slice(0, 4);
         const hash = `0x${[...byteArray].map(b => b.toString(16).padStart(2, '0')).join('')}`;
-        newState.set(normalizedName, {
+        state.set(normalizedName, {
           name,
           parametersTypes,
           normalizedName,
@@ -324,13 +324,10 @@
       }
 
       // Retain old state if new state is empty
-      if (newState.size === 0) {
+      if (state.size === 0) {
         status.textContent = 'No Solidity functions were found. Is the input valid Solidity code?';
         return;
       }
-
-      state = newState;
-      globalThis.state = state; // For debugging
     }
 
     // Update status and output table to match state
