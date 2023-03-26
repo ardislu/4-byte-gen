@@ -284,19 +284,24 @@
     function setState(code) {
       const newState = new Map();
 
-      // Assume each function is on its own line
-      const fns = code.split('\n');
+      let strict = false;
+      const fns = code.split('\n'); // Assume each function is on its own line
       for (let fn of fns) {
         // Clean up empty lines
         fn = fn.trim();
         if (fn === '') {
           continue;
         }
+        if (fn.substring(0, 8) === 'contract') {
+          // Use strict-mode splitFunction for full contracts
+          strict = true;
+          continue;
+        }
 
         // Split out the name from the parameters
         let name, parametersTypes;
         try {
-          ({ name, parametersTypes } = splitFunction(fn));
+          ({ name, parametersTypes } = splitFunction(fn, strict));
         }
         catch {
           continue;
@@ -366,14 +371,19 @@
     /* Business logic */
 
     // Normalize and extract the function name and parameter types
-    function splitFunction(fn) {
-      // Clean all characters that definitely do not affect the signature
-      fn = fn.replaceAll(/[;'"]/g, '');
-
+    function splitFunction(fn, strict = false) {
       // Extract the function name and parameters
       // Original regex is from wagmi-dev/abitype
       // https://github.com/wagmi-dev/abitype/blob/main/src/human-readable/runtime/signatures.ts#L31
-      const functionRegex = /^(function )?(?<name>[a-zA-Z0-9_]+)\((?<parameters>.*?)\)/;
+      let functionRegex;
+      if (strict) {
+        functionRegex = /^(function )(?<name>[\w]+)\((?<parameters>.*?)\)/;
+      }
+      else {
+        fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the signature
+        functionRegex = /^(function )?(?<name>[\w]+)\((?<parameters>.*?)\)/;
+      }
+
       const { name, parameters } = functionRegex.exec(fn).groups;
 
       // Drop parameter names and extraneous whitespace, if there are any
