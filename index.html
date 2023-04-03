@@ -102,6 +102,18 @@
       font-size: 2rem;
     }
 
+    a {
+      text-decoration: none;
+      font-weight: 700;
+      color: hsl(216deg 80% 45%);
+    }
+
+    a:hover,
+    a:focus {
+      color: hsl(216deg 80% 55%);
+      text-decoration: underline;
+    }
+
     label {
       font-weight: 700;
       margin-inline-end: 4px;
@@ -225,6 +237,7 @@
       <p class="subtitle">This tool generates Solidity function names with leading zeroes in their 4-byte
         selectors. These optimized function names will make your smart contract bytecode smaller and save gas on
         deployment. The functions will also cost less gas to call after the smart contract is deployed.</p>
+      <p><a href="https://github.com/ardislu/4-byte-gen">GitHub</a></p>
       <p class="status">Enter some Solidity code in the text box and press "Parse functions".</p>
     </section>
 
