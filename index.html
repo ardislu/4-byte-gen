@@ -382,16 +382,13 @@
 
     // Normalize and extract the function name and parameter types
     function splitFunction(fn, strict = false) {
-      // Extract the function name and parameters
-      // Original regex is from wagmi-dev/abitype
-      // https://github.com/wagmi-dev/abitype/blob/main/src/human-readable/runtime/signatures.ts#L31
       let functionRegex;
       if (strict) {
-        functionRegex = /^(function )(?<name>[\w]+)\((?<parameters>.*?)\)/;
+        functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)\)/;
       }
       else {
         fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the signature
-        functionRegex = /^(function )?(?<name>[\w]+)\((?<parameters>.*?)\)/;
+        functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)\)/;
       }
 
       const { name, parameters } = functionRegex.exec(fn).groups;
