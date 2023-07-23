@@ -192,6 +192,48 @@
       text-align: center;
     }
 
+    /* Dialog styling */
+
+    dialog {
+      inline-size: min(100dvi, 450px);
+      inset-inline-start: 50dvi;
+      inset-block-start: 50dvb;
+      transform: translate(-50%, -50%);
+      background: inherit;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid hsl(216deg 50% 50%);
+    }
+
+    dialog>p {
+      margin-block: 16px;
+    }
+
+    dialog>form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    dialog>form>div {
+      flex-basis: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type=checkbox] {
+      inline-size: 1rem;
+      block-size: 1rem;
+    }
+
+    #cancel {
+      border: 1px solid hsl(216deg 50% 50%);
+      background: hsl(216deg 5% 85%);
+      color: hsl(216deg 80% 5%);
+    }
+
     /* This is a desktop-first tool. Below is the alternate view for small screens. */
     @media (max-width: 900px) {
       main {
@@ -275,6 +317,19 @@
     </output>
   </main>
 
+  <dialog>
+    <h1>Parse new functions</h1>
+    <p>All existing optimized names will be cleared. Continue?</p>
+    <form method="dialog">
+      <div>
+        <input type="checkbox" id="do-not-show" name="do-not-show">
+        <label for="do-not-show">Do not ask again during this session.</label>
+      </div>
+      <button id="cancel" type="button">Cancel</button>
+      <button>Parse</button>
+    </form>
+  </dialog>
+
   <script type="module">
     // From noble-hashes v1.3.1
     import { keccak256 } from '/keccak256.js';
@@ -290,6 +345,7 @@
     const startAll = document.querySelector('#start-all');
     const outputContainer = document.querySelector('output')
     const outputBody = document.querySelector('tbody');
+    const dialog = document.querySelector('dialog');
 
     const state = new Map(); // Store for all active functions
     globalThis.state = state; // For debugging
@@ -399,13 +455,23 @@
     }
 
     function handleParseFunctions(e) {
-      // TODO: implement confirmation dialog
-      // if (state.size > 0) {
-      //   window.alert('*PLACEHOLDER WARNING* All previously parsed functions will be deleted. Are you sure?');
-      // }
+      // Ask for confirmation if any optimized functions have been mined and user has not dismissed the dialog
+      // sessionStorage will store STRING 'true' or 'false'
+      if (sessionStorage.getItem('do-not-show') !== 'true' && (state.values().next().value?.seed ?? 0) !== 0) {
+        dialog.showModal();
+      }
+      else {
+        setState(functions.value);
+        updateUi(state);
+      }
+    }
+    dialog.querySelector('#cancel').addEventListener('click', () => dialog.close());
+    dialog.querySelector('form').addEventListener('submit', e => {
+      const doNotShow = new FormData(e.target).get('do-not-show') === 'on';
+      sessionStorage.setItem('do-not-show', doNotShow); // Will store STRING 'true' or 'false'
       setState(functions.value);
       updateUi(state);
-    }
+    });
 
     function handleStartAll(e) {
       for (const row of state.values()) {
