@@ -10,21 +10,31 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://4bg.ardis.lu/">
   <link rel="icon" href="data:,">
-  <link rel="preconnect" href="https://rsms.me/">
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
   <link rel="modulepreload" href="/worker.js">
   <title>4-byte-gen</title>
   <style>
     /* Globals */
 
-    :root {
-      font-family: 'Inter', sans-serif;
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 400;
+      src: url('/Inter.woff2') format('woff2');
     }
 
-    @supports (font-variation-settings: normal) {
-      :root {
-        font-family: 'Inter var', sans-serif;
-      }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 600;
+      src: url('/Inter_600.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 700;
+      src: url('/Inter_700.woff2') format('woff2');
+    }
+
+    :root {
+      font-family: 'Inter', sans-serif;
     }
 
     * {
