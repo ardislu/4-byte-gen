@@ -458,8 +458,24 @@
       const { name, parameters } = functionRegex.exec(fn).groups;
 
       // Drop parameter names and extraneous whitespace, if there are any
-      // E.g. "uint256 abc, uint256, bool test" --> "uint256,uint256,bool"
-      const parametersTypes = parameters.split(',').map(param => param.trim().split(' ')[0]).join(',');
+      // E.g. "uint abc, uint256, bool test" --> ['uint', 'uint256', 'bool']
+      const parametersArray = parameters.split(',').map(param => param.trim().split(' ')[0]);
+
+      // Convert types from Solidity to ABI (e.g., 'uint' --> 'uint256')
+      // Reference: https://docs.soliditylang.org/en/latest/abi-spec.html#types
+      for (const [index, param] of parametersArray.entries()) {
+        switch (param) {
+          case 'int': parametersArray[index] = 'int256'; break;
+          case 'uint': parametersArray[index] = 'uint256'; break;
+          case 'fixed': parametersArray[index] = 'fixed128x18'; break;
+          case 'ufixed': parametersArray[index] = 'ufixed128x18'; break;
+          case 'contract': parametersArray[index] = 'address'; break;
+          case 'enum': parametersArray[index] = 'uint8'; break;
+          case 'struct': parametersArray[index] = 'tuple'; break;
+        }
+      }
+
+      const parametersTypes = parametersArray.join(',');
 
       return { name, parametersTypes };
     }
