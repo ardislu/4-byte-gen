@@ -446,36 +446,46 @@
 
     // Normalize and extract the function name and parameter types
     function splitFunction(fn, strict = false) {
+      // Extract function name and all params until the last closing parenthesis. WARNING: if the input includes a
+      // "... returns ()", then all keywords up until the last "returns" type is included in params.
       let functionRegex;
       if (strict) {
-        functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)\)/;
+        functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)(?!.+\))/;
       }
       else {
         fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the signature
-        functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)\)/;
+        functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)(?!.+\))/;
       }
 
       const { name, parameters } = functionRegex.exec(fn).groups;
 
-      // Drop parameter names and extraneous whitespace, if there are any
-      // E.g. "uint abc, uint256, bool test" --> ['uint', 'uint256', 'bool']
-      const parametersArray = parameters.split(',').map(param => param.trim().split(' ')[0]);
+      // Drop parameter names and extraneous whitespace, if there are any. Preserves tuple parentheses.
+      // E.g. "(uint abc, uint256, bool test)[]" --> ['(uint', 'uint256', 'bool)[]']
+      const parametersArray = parameters.split(',').map(param => {
+        const trimmed = param.trim();
+        const trailingParens = trimmed.match(/\)*[\[\]]*$/)[0] ?? '';
+        const split = trimmed.split(' ');
+        return `${split[0]}${split.length > 1 ? trailingParens : ''}`;
+      });
 
       // Convert types from Solidity to ABI (e.g., 'uint' --> 'uint256')
       // Reference: https://docs.soliditylang.org/en/latest/abi-spec.html#types
       for (const [index, param] of parametersArray.entries()) {
-        switch (param) {
-          case 'int': parametersArray[index] = 'int256'; break;
-          case 'uint': parametersArray[index] = 'uint256'; break;
-          case 'fixed': parametersArray[index] = 'fixed128x18'; break;
-          case 'ufixed': parametersArray[index] = 'ufixed128x18'; break;
-          case 'contract': parametersArray[index] = 'address'; break;
-          case 'enum': parametersArray[index] = 'uint8'; break;
-          case 'struct': parametersArray[index] = 'tuple'; break;
+        if (/int[1-9]/.test(param) || /uint[1-9]/.test(param)) {
+          continue;
         }
+        parametersArray[index] = param
+          .replace('int', 'int256') // Includes uint --> uint256
+          .replace('contract', 'address')
+          .replace('enum', 'uint8');
       }
 
-      const parametersTypes = parametersArray.join(',');
+      let parametersTypes = parametersArray.join(',');
+
+      // Drop extra trailing parenthesis, if there is one. This happens when "... returns ()" is included in the input.
+      if ((parametersTypes.match(/\(/g)?.length ?? 0) < (parametersTypes.match(/\)/g)?.length ?? 0)) {
+        parametersTypes = parametersTypes.slice(0, -1);
+      }
 
       return { name, parametersTypes };
     }
