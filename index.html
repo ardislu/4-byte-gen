@@ -454,11 +454,11 @@
       // "... returns ()", then all keywords up until the last "returns" type is included in params.
       let functionRegex;
       if (strict) {
-        functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)(?!.+\))/;
+        functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*) *\((?<parameters>.*?)(?!.+\))/;
       }
       else {
         fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the signature
-        functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*)\((?<parameters>.*?)(?!.+\))/;
+        functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*) *\((?<parameters>.*?)(?!.+\))/;
       }
 
       const { name, parameters } = functionRegex.exec(fn).groups;
