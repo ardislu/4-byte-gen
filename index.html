@@ -384,6 +384,13 @@
           continue;
         }
 
+        // Basic lookahead for function definitions that span multiple lines
+        if ((fn.match(/\(/g)?.length ?? 0) > (fn.match(/\)/g)?.length ?? 0)) {
+          const start = code.indexOf(fn);
+          const end = code.indexOf(')', start);
+          fn = code.substring(start, end + 1).replaceAll('\n', '');
+        }
+
         // Split out the name from the parameters
         let name, parametersTypes;
         try {
