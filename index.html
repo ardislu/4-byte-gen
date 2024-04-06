@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Simple web app to generate optimized function signatures for Solidity.">
+  <meta name="description" content="Simple web app to generate optimized function selectors for Solidity.">
   <meta property="og:title" content="4-byte-gen">
-  <meta property="og:description" content="Simple web app to generate optimized function signatures for Solidity.">
+  <meta property="og:description" content="Simple web app to generate optimized function selectors for Solidity.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://4bg.ardis.lu/">
   <link rel="icon" href="data:,">
@@ -469,7 +469,7 @@
         functionRegex = /^(function )(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*) *\((?<parameters>.*?)(?!.+\))/;
       }
       else {
-        fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the signature
+        fn = fn.replaceAll(/[;'"]/g, ''); // Clean all characters that definitely do not affect the selector
         functionRegex = /^(function )?(?<name>[a-zA-Z$_][a-zA-Z0-9$_]*) *\((?<parameters>.*?)(?!.+\))/;
       }
 
