@@ -1,4 +1,4 @@
-// From noble-hashes v1.3.0
+// From noble-hashes v1.4.0
 import { keccak256 } from '/keccak256.js';
 const encoder = new TextEncoder();
 
