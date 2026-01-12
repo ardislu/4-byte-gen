@@ -7,6 +7,8 @@ Similar projects:
 - [emn178/solidity-optimize-name](https://github.com/emn178/solidity-optimize-name)
 - [quartz-technology/sigop](https://github.com/quartz-technology/sigop)
 
+Code repository mirrors: [GitHub](https://github.com/ardislu/4-byte-gen), [Codeberg](https://codeberg.org/ardislu/4-byte-gen), [git.ardis.lu](https://git.ardis.lu/4-byte-gen)
+
 ## Example
 
 ![Demonstration of the 4-byte-gen web UI finding optimized function names for standard ERC-20 functions.](./.github/example-1.png)
